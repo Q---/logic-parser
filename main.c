@@ -5,7 +5,7 @@
 
 int main()
 {
-	char* I = "A+B-C";
+	char* I = "(A+B)+C*(D-E)";
 	
 	int O[512]; // Holds variable conversion stuff
 	int O_i = -1;
@@ -57,7 +57,7 @@ int main()
 			}
 			else if (Ti == 3) // If is left parenthesis
 			{
-				S[++S_i] = T;
+				S[++S_i] = Ti;
 			}
 			else if (Ti == 4) // It is right parenthesis
 			{
@@ -79,8 +79,9 @@ int main()
 		O[++O_i] = S[S_i--];
 	}
 	
-	
-	printf("%c\n", O[3]);
+	for (i = 0; i <= O_i; i++)
+		printf("%c", O[i]);
+	printf("\n");
 	
 	
 	return 0;
