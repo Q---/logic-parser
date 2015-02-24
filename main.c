@@ -1,13 +1,30 @@
 
-// Simple implementation of the shunting-yard algorithm, for converting infix expressions to RPN.
-
 #include <stdio.h>
 
 int main()
 {
-	char* I = "(A+B)+C*(D-E)";
+	char input[512] = "(A+B)+C*(D-E)*D"; // Holds variable conversion stuff
+	unsigned int* length;
 	
-	int O[512]; // Holds variable conversion stuff
+	infixToRPN(input, length);
+	
+	int i = 0;
+	for (i = 0; i < *length; i++)
+		printf("%c", input[i]);
+	printf("\n");
+	
+	
+	
+	
+	return 0;
+}
+
+
+// Simple implementation of the shunting-yard algorithm, for converting infix expressions to RPN.
+// Converts expression in-place.
+
+void infixToRPN(char* O, unsigned int* len)
+{
 	int O_i = -1;
 	
 	int S[512]; // Holds operator stuff
@@ -17,9 +34,9 @@ int main()
 	int asso[3] = {0, 0, 0};
 	
 	int i = 0;
-	for (i = 0; I[i]; i++)
+	for (i = 0; O[i]; i++)
 	{
-		char T = I[i]; // token
+		char T = O[i]; // token
 		
 		if (T > 0x40 && T < 0x133) // If is a letter...
 		{
@@ -79,10 +96,8 @@ int main()
 		O[++O_i] = S[S_i--];
 	}
 	
-	for (i = 0; i <= O_i; i++)
-		printf("%c", O[i]);
-	printf("\n");
+	O[++O_i] = '\0'; // Cap it off with a null
+	*len = O_i;
 	
-	
-	return 0;
+	return;
 }
