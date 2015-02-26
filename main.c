@@ -1,19 +1,26 @@
-
 #include <stdio.h>
+
+void infixToRPN(char*, unsigned int*);
+
+float evalRPN(char*, float*);
 
 int main()
 {
-	char input[512] = "(A+B)+C*(D-E)*D"; // Holds variable conversion stuff
-	unsigned int* length;
+	char code[1024] = "C*(B+C)"; // Holds variable conversion stuff
+	float parameters[512] = {1.0, 2.0, 3.0, 2.0, 5.1};
+	unsigned int length = 0;
 	
-	infixToRPN(input, length);
+	infixToRPN(code, &length);
+
+	float ANS = evalRPN(code, parameters);
 	
-	int i = 0;
-	for (i = 0; i < *length; i++)
-		printf("%c", input[i]);
+	int i;
+	for (i = 0; i < length; i++)
+		printf("%c", code[i]);
 	printf("\n");
 	
 	
+	printf("%f\n",ANS);
 	
 	
 	return 0;
@@ -27,7 +34,7 @@ void infixToRPN(char* O, unsigned int* len)
 {
 	int O_i = -1;
 	
-	int S[512]; // Holds operator stuff
+	int S[1024]; // Holds operator stuff
 	int S_i = -1;
 	
 	int prec[3]= {1, 1, 2};
@@ -38,7 +45,7 @@ void infixToRPN(char* O, unsigned int* len)
 	{
 		char T = O[i]; // token
 		
-		if (T > 0x40 && T < 0x133) // If is a letter...
+		if (T >= 'A' && T <= 'Z' ) // If is a letter...
 		{
 			O[++O_i] = T; // Add to queue
 		}
@@ -101,3 +108,44 @@ void infixToRPN(char* O, unsigned int* len)
 	
 	return;
 }
+
+// Simple RPN expression evaluator, based on a stack machine.
+
+float evalRPN(char* code, float* parameters)
+{
+	float S[1024];
+	int S_i = -1;
+	
+	int i;
+	int T;
+	for (i = 0; i < code[i]; i++)
+	{
+		T = code[i];
+		if (T >= 'A' && T <= 'Z')
+		{
+			S[++S_i] = parameters[T - 'A'];
+		}
+		else
+		{
+			switch (T)
+			{
+				case '+':
+					S_i--;
+					S[S_i] = S[S_i] + S[S_i+1];
+					break;
+				case '-':
+					S_i--;
+					S[S_i] = S[S_i] - S[S_i+1];
+					break;
+				case '*':
+					S_i--;
+					S[S_i] = S[S_i] * S[S_i+1];
+					break;
+			}
+		}
+	}
+	
+	return S[0];
+}
+
+
